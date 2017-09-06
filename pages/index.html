@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Save file</title>
+    <link rel="stylesheet" href="/css/todo.css">
+</head>
+<body>
+    <div id="app">
+        <h1>Todo app</h1>
+        <hr>
+       
+        <form action="app.php" method="post" id="saveForm">
+            <input type="hidden" name="content" id="hidden_input">
+        </form>
+
+        <h2>Search:</h2>
+        <input type="search" v-model="search" placeholder="Search...">
+        <br>
+        
+        <h2>New todo:</h2>
+        <input type="text" v-model="newTodoText" placeholder="Add todo..." v-on:keyup.enter="addTodo" id="addTodo">
+        <br>
+        <ul>
+            <li 
+                is="todo-item"
+                v-for="(todo, index) in todos" 
+                v-bind:key="todo.id"
+                v-bind:title="todo.title"
+                v-if="todo.title.toLowerCase().indexOf(search.toLowerCase()) != -1"
+                v-on:remove="todos.splice(index, 1)">
+            </li>
+        </ul>
+
+        <button onclick="saveList()" class="save_btn">SAVE</button>
+    </div>
+    
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/vue.js"></script>
+    <script>
+
+        Vue.component('todo-item', {
+            template: '<li><a href="#">{{ title }}</a>\
+                    <button class="delete_btn" v-on:click="$emit(\'remove\')">X</button></li>',
+//            template: '<a href="#"><li>{{ title }}</li></a>',
+            props: ['title']
+        })
+        
+        var app = new Vue({
+            el: '#app',
+            data: 
+            {
+                search: '',
+                newTodoText: '',
+                todos: '',
+                nextTodoId: 0
+            },
+            methods: 
+            {
+                addTodo: function()
+                {
+                    this.todos.push(
+                        {
+                            id: this.nextTodoId++,
+                            title: this.newTodoText
+                        })
+                    this.newTodoText = '';
+                    console.info('item created');
+                    saveList();
+                }
+            }
+        })
+        
+        $.ajax({
+            url: '../data/people.txt',
+            success: function(data){
+                console.log('data: '+data);
+                app.todos = JSON.parse(data);
+                app.nextTodoId = app.todos.length+1;
+                console.log('app todos: '+ JSON.stringify( app.todos ) );
+            }
+        });
+        
+        // Обработчик клика для динамических объектов
+        // Заменяет стандартный onClick селектора
+        $(document).on('click', '.delete_btn', function(){
+            console.info('item deleted');
+            saveList();
+        });
+        
+        var saveList = () => { 
+            var sendInfo = JSON.stringify( app.todos );
+            console.log(sendInfo);
+            $('#hidden_input').val(sendInfo);
+//            $('#saveForm').submit();
+            
+            // Функция асинхронной отправки через AJAX заменяет обновление страницы
+            jQuery.ajax({
+                url:     '/app/saver.php',
+                type:     "POST",
+                dataType: "html",
+                data: jQuery("#saveForm").serialize(),
+                success: function(response) {
+                    console.info('Данные отправлены на сервер');
+                },
+                error: function(response) {
+                    console.error("Возникла ошибка при отправке формы");
+                }
+                });
+        }
+        
+    </script>
+</body>
+</html>

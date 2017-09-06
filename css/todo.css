@@ -1,0 +1,92 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: verdana;
+}
+
+h1 {
+    margin: 10px;
+}
+
+h2 {
+    margin-top: 10px;
+}
+
+#app {
+    text-align: center;
+}
+
+input {
+/*    padding: 5px;*/
+    padding: 5px 20px;
+    height: 30px;
+    width: 600px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    border: none;
+    background-color: lavender;
+    color: #333;
+}
+
+ul {
+    display: inline;
+    list-style: none;
+    width: 600px;
+    padding: 0;
+    margin: 0;
+    margin-top: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 700;
+}
+
+li {
+    font-size: 20px;
+    font-family: verdana;
+    padding: 10px;
+    padding-bottom: 14px;
+    height: 20px;
+    
+    transition: 0.3s ease;
+}
+
+li:nth-child(odd) {
+    background-color: orange;
+}
+
+li:nth-child(even) {
+    background-color: darkorange;
+}
+
+.save_btn {
+    background-color: royalblue;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: none;
+    padding: 20px 50px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.delete_btn {
+    background-color: crimson;
+    color: white;
+    border: none;
+    position: relative;
+    padding: 5px 10px;
+    top: -3px;
+    left: 20px;
+    cursor: pointer;
+}
+
+button {
+    transition: 0.2s ease;
+}
+
+button:hover {
+    filter: brightness(1.2);
+}
