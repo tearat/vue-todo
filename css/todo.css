@@ -1,34 +1,80 @@
 * {
     margin: 0;
     padding: 0;
-    font-family: verdana;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
 }
 
-h1 {
+body {
+    margin-left: 30%;
+    margin-right: 30%;
+}
+
+nav {
+    border-bottom: 1px solid #333;
+    display: table;
+    width: 100%;
+    padding: 5px 0;
+    margin-bottom: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+}
+
+nav img {
+    height: 30px;
+    position: relative;
+    top: 7px;
+    padding: 3px;
+    padding-right: 10px;
+}
+
+nav h1 {
+    display: table-cell;
+    font-size: 30px;
     margin: 10px;
+    text-align: left;
 }
 
-h2 {
-    margin-top: 10px;
+nav p {
+    display: table-cell;
+    text-align: right;
+    position: relative;
 }
 
-#app {
+/**/
+
+#app { 
     text-align: center;
 }
 
-input {
-/*    padding: 5px;*/
-    padding: 5px 20px;
+#app p {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+#app input {
+/*    padding: 5px 20px;*/
+    padding-left: 20px;
     height: 30px;
-    width: 600px;
+    width: 200px;
     margin-bottom: 20px;
     font-size: 16px;
     border: none;
     background-color: lavender;
+    background-color: #ddf3fb;
     color: #333;
+    transition: 0.3s ease;
 }
 
-ul {
+#app input:focus {
+    width: 100% !important;
+}
+
+#app ul {
     display: inline;
     list-style: none;
     width: 600px;
@@ -37,31 +83,41 @@ ul {
     margin-top: 10px;
 }
 
-a {
+#app a {
     text-decoration: none;
     color: #333;
-    font-weight: 700;
 }
 
-li {
+#app li {
     font-size: 20px;
-    font-family: verdana;
+    font-weight: 500;
     padding: 10px;
     padding-bottom: 14px;
     height: 20px;
     
+    border-radius: 2px;
+    
     transition: 0.3s ease;
+    
+    margin-top: 5px;
 }
 
-li:nth-child(odd) {
+#app li:nth-child(odd) {
     background-color: orange;
+    background-color: #99d6eb;
 }
 
-li:nth-child(even) {
+#app li:nth-child(even) {
     background-color: darkorange;
+    background-color: #c7e8f4;
 }
 
-.save_btn {
+#app li:hover {
+    background-color: #d1fcd3;
+/*    filter: brightness(1.1);*/
+}
+
+#app .save_btn {
     background-color: royalblue;
     color: white;
     font-weight: 700;
@@ -72,21 +128,28 @@ li:nth-child(even) {
     cursor: pointer;
 }
 
-.delete_btn {
-    background-color: crimson;
-    color: white;
+#app .delete_btn {
+    float: right;
+/*    background-color: rgba(255,0,0,0.2);*/
+    background-color: white;
+    color: #333;
     border: none;
     position: relative;
-    padding: 5px 10px;
+    padding: 7px 10px;
     top: -3px;
-    left: 20px;
+    left: 4px;
     cursor: pointer;
 }
 
-button {
+#app .delete_btn:hover {
+    background-color: crimson;
+    color: white;
+}
+
+#app button {
     transition: 0.2s ease;
 }
 
-button:hover {
-    filter: brightness(1.2);
+#app button:hover {
+    filter: brightness(1.25);
 }

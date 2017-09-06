@@ -4,21 +4,24 @@
     <meta charset="UTF-8">
     <title>Save file</title>
     <link rel="stylesheet" href="/css/todo.css">
+    <link rel="icon" href="/img/favicon.ico" type="image/x-icon"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,500" rel="stylesheet">
 </head>
 <body>
+    <nav>
+        <a href="/"><h1><img src="/img/logo.png" alt="">Todo app →</h1></a>
+        <p>v0.2 (6.09.2017)</p>
+    </nav>
     <div id="app">
-        <h1>Todo app</h1>
-        <hr>
-       
         <form action="app.php" method="post" id="saveForm">
             <input type="hidden" name="content" id="hidden_input">
         </form>
 
-        <h2>Search:</h2>
+        <p>Search:</p>
         <input type="search" v-model="search" placeholder="Search...">
         <br>
         
-        <h2>New todo:</h2>
+        <p>New todo:</p>
         <input type="text" v-model="newTodoText" placeholder="Add todo..." v-on:keyup.enter="addTodo" id="addTodo">
         <br>
         <ul>
@@ -32,7 +35,7 @@
             </li>
         </ul>
 
-        <button onclick="saveList()" class="save_btn">SAVE</button>
+<!--        <button onclick="saveList()" class="save_btn">SAVE</button>-->
     </div>
     
     <script src="/js/jquery-3.2.1.min.js"></script>
@@ -40,9 +43,8 @@
     <script>
 
         Vue.component('todo-item', {
-            template: '<li><a href="#">{{ title }}</a>\
+            template: '<li>{{ title }}\
                     <button class="delete_btn" v-on:click="$emit(\'remove\')">X</button></li>',
-//            template: '<a href="#"><li>{{ title }}</li></a>',
             props: ['title']
         })
         
@@ -65,26 +67,30 @@
                             title: this.newTodoText
                         })
                     this.newTodoText = '';
-                    console.info('item created');
+                    console.info('Item created');
                     saveList();
                 }
             }
         })
         
+        // Загрузка данных из файла и парсинг строки в объект
         $.ajax({
             url: '../data/people.txt',
             success: function(data){
-                console.log('data: '+data);
+                console.info('Todos data is loaded');
                 app.todos = JSON.parse(data);
+                app.todos = app.todos.sort();
                 app.nextTodoId = app.todos.length+1;
+                console.groupCollapsed('Todos data');
                 console.log('app todos: '+ JSON.stringify( app.todos ) );
+                console.groupEnd();
             }
         });
         
         // Обработчик клика для динамических объектов
         // Заменяет стандартный onClick селектора
         $(document).on('click', '.delete_btn', function(){
-            console.info('item deleted');
+            console.info('Item deleted');
             saveList();
         });
         
@@ -101,12 +107,12 @@
                 dataType: "html",
                 data: jQuery("#saveForm").serialize(),
                 success: function(response) {
-                    console.info('Данные отправлены на сервер');
+                    console.info('Successfully sended to server');
                 },
                 error: function(response) {
-                    console.error("Возникла ошибка при отправке формы");
+                    console.error("Error. Data has not send");
                 }
-                });
+            });
         }
         
     </script>
