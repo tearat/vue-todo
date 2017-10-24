@@ -9,20 +9,22 @@
 </head>
 <body>
     <nav>
-        <a href="/"><h1><img src="/img/logo.png" alt="">Todo app</h1></a>
-        <p>v0.2 (6.09.2017)</p>
+        <a href="/">
+            <h1>Vue.js blog app</h1>
+        </a>
+        <p>v0.1 (24.10.2017)</p>
     </nav>
     <div id="app">
         <form action="app.php" method="post" id="saveForm">
             <input type="hidden" name="content" id="hidden_input">
         </form>
 
-        <p>Search:</p>
-        <input type="search" v-model="search" placeholder="Search...">
+        <p>Поиск:</p>
+        <input type="text" v-model="search" placeholder="Поиск...">
         <br>
         
-        <p>New todo:</p>
-        <input type="text" v-model="newTodoText" placeholder="Add todo..." v-on:keyup.enter="addTodo" id="addTodo">
+        <p>Новая запись:</p>
+        <input type="text" v-model="newTodoText" placeholder="Новая запись..." v-on:keyup.enter="addTodo" id="addTodo">
         <br>
         <ul>
             <li 

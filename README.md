@@ -1,2 +1,4 @@
 # localhost
-My todo-list project for vue.js learning
+
+- 24.10.17
+- Forked for blog app

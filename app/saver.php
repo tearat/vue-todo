@@ -1,9 +1,8 @@
 <?php
-    if ( !empty($_POST['content']) )
+    if ( !empty( $_POST['content'] ) )
     {
         $file = '../data/people.txt';
-        $current = $_POST['content'];
-        file_put_contents($file, $current);
+        file_put_contents( $file, $_POST['content'] );
     }
     header('location: /');
 ?>
