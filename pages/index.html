@@ -3,97 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <title>Todo app</title>
-    <link rel="stylesheet" href="/css/todo.css">
-    <link rel="icon" href="/img/favicon.ico" type="image/x-icon"/>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,500" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/hint.min.css">
+<!--    <link rel="icon" href="/img/favicon.ico" type="image/x-icon"/>-->
+    <link rel="icon" href="/img/icon.png" type="image/png"/>
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.1/iconfont/material-icons.min.css">
 </head>
 <body>
-    <nav>
-        <a href="/"><h1><img src="/img/logo.png" alt="">Todo app</h1></a>
-        <p>v0.2 (6.09.2017)</p>
-    </nav>
+    
     <div id="app">
-        <form action="app.php" method="post" id="saveForm">
-            <input type="hidden" name="content" id="hidden_input">
-        </form>
-
-        <p>Search:</p>
-        <input type="search" v-model="search" placeholder="Search...">
-        <br>
+        <nav>
+            <a href="/">
+                <h1><i class="material-icons">beenhere</i> Todo app</h1>
+            </a>
+            <p @click="changelog=!changelog">v0.3 (23.08.2018)</p>
+        </nav>
+        <p v-if="changelog" class="changelog">
+            v0.3: <br>
+            - Rewrited all the scripts; <br>
+            - Added `undo` function; <br>
+            - Added `done` function; <br>
+            - Added sorting by status and id; <br>
+        </p>
         
-        <p>New todo:</p>
-        <input type="text" v-model="newTodoText" placeholder="Add todo..." v-on:keyup.enter="addTodo" id="addTodo">
-        <br>
+        <hr>
+
+        <div class="center">
+            <label for="new_todo">New todo:</label>
+            <input id="new_todo" type="text" v-model="newTodo" v-on:keyup.enter="addTodo">
+        </div>
+        
+        <div class="center">
+            <label for="search_todo">Search:</label>
+            <input id="search_todo" type="text" v-model="search">
+        </div>
+        
+        <div class="center">
+            <button @click="undoDelete()" v-if="undo.id" class="undo_btn">undo</button>
+        </div>
+        
+<!--        <p>{{todos}}</p>-->
         <ul>
-            <li 
+            <div 
                 is="todo-item"
                 v-for="(todo, index) in todos" 
                 v-bind:key="todo.id"
-                v-bind:title="todo.title"
                 v-if="todo.title.toLowerCase().indexOf(search.toLowerCase()) != -1"
-                v-on:remove="todos.splice(index, 1)">
-            </li>
+            >
+                <li v-bind:class="{ done: todo.done }">
+                    {{ todo.title }}
+                    <span class="hint--bottom" aria-label="Delete">
+                        <button class="delete_btn" @click="deleteTodo(index, $event)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </span>
+                    <span class="hint--bottom" aria-label="Complete!">
+                        <button v-if="!todo.done" class="done_btn" @click="doneTodo(index)">
+                            <i class="material-icons">done</i>
+                        </button>
+                    </span>
+                    <span class="hint--bottom" aria-label="Return to tasks">
+                        <button v-if="todo.done" class="undone_btn" @click="doneTodo(index)">
+                            <i class="material-icons">cached</i>
+                        </button>
+                    </span>
+                    <span v-if="todo.done">done</span>
+                </li>
+            </div>
         </ul>
     </div>
     
-    <script src="/js/jquery-3.2.1.min.js"></script>
-    <script src="/js/vue.js"></script>
+    <div class="wrapper">
+        <div id="github">
+            <a href="https://github.com/teraaret/vue-todo" target="_blank">
+                <img src="/img/github.svg">
+            </a>
+        </div>
+    </div>
+    
+    <script src="/js/vue.min.js"></script>
     <script>
-
-        Vue.component('todo-item', {
-            props: ['title'],
-            template: '<li>{{ title }}\
-                    <button class="delete_btn" v-on:click="$emit(\'remove\')">X</button></li>'
-        })
-        
         var app = new Vue({
             el: '#app',
             data: 
             {
                 search: '',
-                newTodoText: '',
-                todos: '',
-                nextTodoId: 0
+                newTodo: '',
+                todos: [],
+                undo: {},
+                nextId: 0,
+                json_endpoint: "/data/data.json",
+                controller_endpoint: "/app/controller.php",
+                changelog: false
             },
             methods: 
             {
                 addTodo: function()
                 {
-                    this.todos.push(
-                        {
-                            id: this.nextTodoId++,
-                            title: this.newTodoText
-                        })
-                    this.newTodoText = '';
-                    console.info('Item created');
-                    saveList();
-                }
+                    this.todos.push({ 
+                        id: this.nextId++,
+                        title: this.newTodo,
+                        done: false
+                    });
+                    this.newTodo = '';
+                    this.saveList();
+                },
+                doneTodo: function(index) {
+                    this.todos[index].done = !this.todos[index].done;
+                    this.saveList();
+                },
+                deleteTodo: function(index, event)
+                {
+                    if (event.ctrlKey) {
+                        this.undo = this.todos[index];
+                        this.todos.splice(index, 1);
+                    }
+                    else {
+                        var question = confirm("Are you sure?");
+                        if (question == true) {
+                            this.undo = this.todos[index];
+                            this.todos.splice(index, 1);
+                        }
+                    }
+                    this.saveList();
+                },
+                undoDelete: function() {
+                    if (this.undo.id) {
+                        this.todos.push(this.undo);
+                        this.undo = {};
+                        this.saveList();
+                    }
+                },
+                find: function(id) {
+                    var that = this;
+                    for(i=0; i<this.todos.length; i++) {
+                        if ( that.todos[i].id == id ) {
+                            return i;
+                        }
+                    }
+                },
+                loadList: function()
+                {
+                    $.ajaxSetup({ cache: false });
+                    var that = this;
+                    $.get(this.json_endpoint, function(data)
+                    {
+                        that.todos = data;
+                        that.sortList();
+                        that.nextId = app.todos.length+1;
+                    })
+                    .done(function() { console.log("loaded") });
+                },
+                sortList() {
+                    this.todos.sort(function(a, b) {
+                        if ( a.done == b.done ) {
+                            return a.id - b.id;
+                        } else {
+                            return a.done - b.done;
+                        }
+//                        return a.done - b.done;
+                    });
+                },
+                saveList: function() 
+                {
+                    var that = this;
+                    $.post(this.controller_endpoint, {content: JSON.stringify(that.todos)})
+                    .done(function (html) { console.log(html) });
+                    that.sortList();
+                },
+            },
+            mounted: function() 
+            {
+                this.loadList();
             }
-        })
-        
-        // Загрузка данных из файла и парсинг строки в объект
-        $.ajaxSetup({ cache: false });
-        $.get('../data/people.txt', function(data)
-        {
-            app.todos = JSON.parse(data).sort();
-            app.nextTodoId = app.todos.length+1;
-//            console.groupCollapsed('Todos data');
-//            console.log('app todos: '+ JSON.stringify( app.todos ) );
-//            console.groupEnd();
         });
-        
-        // Обработчик клика для динамических объектов
-        // Заменяет стандартный onClick селектора
-        $(document).on('click', '.delete_btn', function(){
-            console.info('Item deleted');
-            saveList();
-        });
-        
-        var saveList = function()
-        {
-            $.post('/app/saver.php', { content: JSON.stringify(app.todos) } );
-        }
-        
     </script>
 </body>
 </html>
