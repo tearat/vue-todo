@@ -5,7 +5,6 @@
     <title>Todo app</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/hint.min.css">
-<!--    <link rel="icon" href="/img/favicon.ico" type="image/x-icon"/>-->
     <link rel="icon" href="/img/icon.png" type="image/png"/>
     <script src="/js/jquery-3.2.1.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.1/iconfont/material-icons.min.css">
@@ -17,33 +16,30 @@
             <a href="/">
                 <h1><i class="material-icons">beenhere</i> Todo app</h1>
             </a>
-            <p @click="changelog=!changelog">v0.3 (23.08.2018)</p>
+            <p>v0.4 stable (24.08.2018)</p>
         </nav>
-        <p v-if="changelog" class="changelog">
-            v0.3: <br>
-            - Rewrited all the scripts; <br>
-            - Added `undo` function; <br>
-            - Added `done` function; <br>
-            - Added sorting by status and id; <br>
-        </p>
         
         <hr>
 
-        <div class="center">
-            <label for="new_todo">New todo:</label>
-            <input id="new_todo" type="text" v-model="newTodo" v-on:keyup.enter="addTodo">
+        <div class="top">
+            <div class="center">
+                <label for="new_todo">New todo:</label>
+                <input id="new_todo" type="text" v-model="newTodo" v-on:keyup.enter="addTodo">
+            </div>
+
+            <div class="center">
+                <label for="search_todo">Search:</label>
+                <input id="search_todo" type="text" v-model="search">
+            </div>
+
+            <div class="center">
+                <button @click="undoDelete()" v-if="undo.length>0" class="undo_btn">undo ({{undo.length}})</button>
+            </div>
         </div>
         
-        <div class="center">
-            <label for="search_todo">Search:</label>
-            <input id="search_todo" type="text" v-model="search">
-        </div>
-        
-        <div class="center">
-            <button @click="undoDelete()" v-if="undo.id" class="undo_btn">undo</button>
-        </div>
-        
+<!--        <p>edit: {{edit}}</p>-->
 <!--        <p>{{todos}}</p>-->
+<!--        <p>{{undo}}</p>-->
         <ul>
             <div 
                 is="todo-item"
@@ -52,7 +48,12 @@
                 v-if="todo.title.toLowerCase().indexOf(search.toLowerCase()) != -1"
             >
                 <li v-bind:class="{ done: todo.done }">
-                    {{ todo.title }}
+                    <inline @click="editBegin(todo.id)" v-show="edit != todo.id">
+<!--                        {{ todo.id }} | -->
+                        {{ todo.title }}
+                    </inline>
+                    <input :id="'input_'+todo.id" type="text" v-show="edit == todo.id" v-model="todos[findPosById(todo.id)].title" @keyup.enter="editEnd()">
+                    
                     <span class="hint--bottom" aria-label="Delete">
                         <button class="delete_btn" @click="deleteTodo(index, $event)">
                             <i class="material-icons">delete</i>
@@ -88,54 +89,18 @@
             el: '#app',
             data: 
             {
-                search: '',
-                newTodo: '',
-                todos: [],
-                undo: {},
-                nextId: 0,
-                json_endpoint: "/data/data.json",
-                controller_endpoint: "/app/controller.php",
-                changelog: false
+                search: '', // search input value
+                newTodo: '', // new todo input value
+                todos: [], // todos (loaded from json)
+                edit: undefined, // number of showing edit input
+                undo: [], // undo stack
+                nextId: 0, // id value appends to new items
+                controller_endpoint: "/app/controller.php", // link to PHP controller
+                token: "token123" // secret token (in develop)
             },
             methods: 
             {
-                addTodo: function()
-                {
-                    this.todos.push({ 
-                        id: this.nextId++,
-                        title: this.newTodo,
-                        done: false
-                    });
-                    this.newTodo = '';
-                    this.saveList();
-                },
-                doneTodo: function(index) {
-                    this.todos[index].done = !this.todos[index].done;
-                    this.saveList();
-                },
-                deleteTodo: function(index, event)
-                {
-                    if (event.ctrlKey) {
-                        this.undo = this.todos[index];
-                        this.todos.splice(index, 1);
-                    }
-                    else {
-                        var question = confirm("Are you sure?");
-                        if (question == true) {
-                            this.undo = this.todos[index];
-                            this.todos.splice(index, 1);
-                        }
-                    }
-                    this.saveList();
-                },
-                undoDelete: function() {
-                    if (this.undo.id) {
-                        this.todos.push(this.undo);
-                        this.undo = {};
-                        this.saveList();
-                    }
-                },
-                find: function(id) {
+                findPosById: function(id) {
                     var that = this;
                     for(i=0; i<this.todos.length; i++) {
                         if ( that.todos[i].id == id ) {
@@ -143,39 +108,118 @@
                         }
                     }
                 },
+                findMax() {
+                    // map takes all `id` params from the this.todos object
+                    var ids = this.todos.map( function(todo) { return todo.id } );
+                    // and returns the max of them +1
+                    return Math.max.apply(null, ids)+1;
+                },
+                addTodo: function() {
+                    // check emptiness
+                    if ( this.newTodo == "" ) { return false; }
+                    this.todos.push({ 
+                        id: this.findMax(),
+                        title: this.newTodo,
+                        done: false
+                    });
+                    this.newTodo = '';
+                    this.saveList();
+                },
+                editBegin: function(id) {
+                    // setting this.edit to number of edited item
+                    this.edit = id;
+                    // idk why vue do not wants do it easier...
+                    Vue.nextTick(function () {
+                        $("#input_"+id).focus();
+                    })
+                },
+                editEnd: function() {
+                    // unfocusing
+                    this.edit = undefined;
+                    this.saveList();
+                },
+                doneTodo: function(index) {
+                    // reverse the `done` status of todo was clicked
+                    this.todos[index].done = !this.todos[index].done;
+                    this.saveList();
+                },
+                deleteTodo: function(index, event)
+                {
+                    if (event.ctrlKey) {
+                        this.undo.push(this.todos[index]);
+                        this.todos.splice(index, 1);
+                    }
+                    else {
+                        var question = confirm("Are you sure?");
+                        if (question == true) {
+                            this.undo.push(this.todos[index]);
+                            this.todos.splice(index, 1);
+                        }
+                    }
+                    this.saveList();
+                },
+                undoDelete: function() {
+                    // `undo` function pops the last value in the this.undo array
+                    // and pushing it to this.todos
+                    this.todos.push(this.undo.pop());
+                    this.saveList();
+                },
                 loadList: function()
                 {
+                    // there are GET request to PHP controller
+                    // it sends READ variable with value 1 and token
                     $.ajaxSetup({ cache: false });
+                    $.ajaxSetup({ async: false });
                     var that = this;
-                    $.get(this.json_endpoint, function(data)
+                    $.get(this.controller_endpoint+"?read=1&token="+this.token, function(data)
                     {
-                        that.todos = data;
-                        that.sortList();
-                        that.nextId = app.todos.length+1;
-                    })
-                    .done(function() { console.log("loaded") });
-                },
-                sortList() {
-                    this.todos.sort(function(a, b) {
-                        if ( a.done == b.done ) {
-                            return a.id - b.id;
-                        } else {
-                            return a.done - b.done;
+                        if (data!="")
+                        {
+                            that.todos = JSON.parse(data);
+                            that.sortList();
                         }
-//                        return a.done - b.done;
+                    })
+                    .done(function(data, textStatus, jqXHR) {
+//                        console.log(data) 
+//                        console.log(textStatus) 
+//                        console.log(jqXHR) 
                     });
                 },
                 saveList: function() 
                 {
+                    // there are POST request to PHP controller
+                    // it sends current JSON and token
                     var that = this;
-                    $.post(this.controller_endpoint, {content: JSON.stringify(that.todos)})
-                    .done(function (html) { console.log(html) });
+                    $.post(this.controller_endpoint, {
+                        content: JSON.stringify(that.todos),
+                        token: that.token
+                    })
+                    .done(function (data, textStatus, jqXHR) { 
+//                        console.log(data) 
+//                        console.log(textStatus) 
+//                        console.log(jqXHR) 
+                    });
                     that.sortList();
+                },
+                sortList() {
+                    // Sorting by `status` in first step
+                    // and dy `id` desc in second step
+                    this.todos.sort(function(a, b) {
+                        if ( a.done == b.done ) {
+                            return b.id - a.id;
+                        } else {
+                            return a.done - b.done;
+                        }
+                    });
                 },
             },
             mounted: function() 
             {
+//                var that = this;
                 this.loadList();
+//                this.todos.forEach(function(todo) {
+//                    that.edits.push({id: todo.id, show: false});
+//                });
             }
         });
     </script>
