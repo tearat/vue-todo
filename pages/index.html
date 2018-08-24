@@ -109,6 +109,9 @@
                     }
                 },
                 findMax() {
+                    if (this.todos.length==0) {
+                        return 1;
+                    }
                     // map takes all `id` params from the this.todos object
                     var ids = this.todos.map( function(todo) { return todo.id } );
                     // and returns the max of them +1
