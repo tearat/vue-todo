@@ -1,9 +1,9 @@
 <?php
 
-    $token = "token123";
+//    $token = "token123";
 
-    if ( ($_GET['token'] == $token) || ($_POST['token'] == $token) )
-    {
+//    if ( ($_GET['token'] == $token) || ($_POST['token'] == $token) )
+//    {
         $dirname = $_SERVER['DOCUMENT_ROOT'].'/data';
         $filename = $_SERVER['DOCUMENT_ROOT'].'/data/data.json';
 
@@ -29,9 +29,9 @@
             header('Content-Type: text/plain');
             echo "php: file saved";
         }
-    } else {
-        header($_SERVER['SERVER_PROTOCOL']." 418 I'm a teapot");
-    }
+//    } else {
+//        header($_SERVER['SERVER_PROTOCOL']." 418 I'm a teapot");
+//    }
 
 
 ?>
