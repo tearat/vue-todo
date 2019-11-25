@@ -9,17 +9,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.1/iconfont/material-icons.min.css">
 </head>
 <body>
-    
+
     <div id="app">
         <nav>
             <a href="/">
                 <h1><i class="material-icons">beenhere</i> Todo app</h1>
             </a>
-            <p>v0.5 stable (23.05.2019)</p>
+            <p>v0.6 stable (25.11.2019)</p>
         </nav>
-        
-        {{ edit }}
-        
+
         <hr>
 
         <div class="top">
@@ -37,19 +35,19 @@
                 <button @click="undoDelete()" v-if="undo.length>0" class="undo_btn">undo ({{undo.length}})</button>
             </div>
         </div>
-        
+
         <ul>
-            <div 
+            <div
                 is="todo-item"
-                v-for="(todo, key) in todos" 
+                v-for="(todo, key) in todos"
                 v-if="todo.title.toLowerCase().indexOf(search.toLowerCase()) != -1"
             >
-                <li v-bind:class="{ done: todo.done }" @click="editBegin(key)">
-                    <inline v-show="edit != key">
+                <li v-bind:class="{ done: todo.done }">
+                    <inline v-show="edit != key" @click="editBegin(key)">
                         {{ todo.title }}
                     </inline>
                     <input type="text" :key="key" v-show="edit == key" v-model="todos[key].title" @keyup.enter="editEnd(todo.title, key)">
-                    
+
                     <button class="delete_btn" @click="deleteTodo(todo.title, $event)">
                         <i class="material-icons">delete</i>
                     </button>
@@ -64,15 +62,15 @@
             </div>
         </ul>
     </div>
-    
-    <div class="wrapper">
+
+    <!-- <div class="wrapper">
         <div id="github">
             <a href="https://github.com/teraaret/vue-todo" target="_blank">
                 <img src="/img/github.svg">
             </a>
         </div>
-    </div>
-    
+    </div> -->
+
     <script src="/js/vue.min.js"></script>
     <script src="/js/index.js"></script>
 </body>
