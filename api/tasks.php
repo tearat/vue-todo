@@ -17,4 +17,4 @@ foreach ($tasks as $task) {
 }
 
 echo "\n";
-echo "http://".$_SERVER['HTTP_HOST'];
+echo "http://".$_SERVER['HTTP_HOST'] . "\n";
