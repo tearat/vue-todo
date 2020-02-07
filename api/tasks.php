@@ -15,3 +15,6 @@ foreach ($tasks as $task) {
     }
     echo $task->title . "\n";
 }
+
+echo "\n";
+echo "http://".$_SERVER['HTTP_HOST'];
