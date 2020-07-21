@@ -155,15 +155,19 @@ body {
     padding-right: 0;
     padding-bottom: 14px;
     padding-left: 20px;
-    height: 24px;
+    /* height: 24px; */
     transition: 0.3s ease;
     margin-top: 5px;
     color: white;
     background-color: #328275;
 }
 
-#app li inline {
+#app li p {
     cursor: pointer;
+    margin-bottom: 11px;
+}
+#app li p.small {
+    font-size: 14px !important;
 }
 
 #app li input {
@@ -174,12 +178,31 @@ body {
     left: -5px;
     padding-left: 5px;
     height: 30px;
-    width: 600px;
-    margin-bottom: 20px;
+    width: calc(100% - 15px);
+    margin-bottom: 5px;
     border: none;
     transition: 0.3s ease;
     color: white;
     background-color: rgba(255,255,255,0.25);
+}
+
+#app li textarea {
+    font-size: 20px;
+    font-weight: 500;
+    position: relative;
+    top: -3px;
+    left: -5px;
+    padding-left: 5px;
+    height: 30px;
+    width: calc(100% - 15px);
+    margin-bottom: 5px;
+    border: none;
+    transition: 0.3s ease;
+    color: white;
+    background-color: rgba(255,255,255,0.25);
+    height: 64px;
+    font-size: 12px;
+    padding-top: 2px;
 }
 
 #app li.done {
@@ -201,7 +224,7 @@ body {
     border: none;
     position: relative;
     padding: 5px 8px;
-    top: -7px;
+    top: -8px;
     cursor: pointer;
     transition: 0.2s ease;
 }

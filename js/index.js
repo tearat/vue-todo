@@ -15,6 +15,7 @@ var app = new Vue({
             if ( this.todos.findIndex(x => x.title == this.newTodo) != -1 ) return false; // check repeat
             this.todos.push({
                 title: this.newTodo,
+                description: '',
                 done: false
             });
             this.newTodo = '';

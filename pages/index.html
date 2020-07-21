@@ -15,7 +15,7 @@
             <a href="/">
                 <h1><i class="material-icons">beenhere</i> Todo app</h1>
             </a>
-            <p>v0.6 stable (25.11.2019)</p>
+            <p>v0.7 (21.07.2020)</p>
         </nav>
 
         <hr>
@@ -43,21 +43,26 @@
                 v-if="todo.title.toLowerCase().indexOf(search.toLowerCase()) != -1"
             >
                 <li v-bind:class="{ done: todo.done }">
-                    <inline v-show="edit != key" @click="editBegin(key)">
-                        {{ todo.title }}
-                    </inline>
-                    <input type="text" :key="key" v-show="edit == key" v-model="todos[key].title" @keyup.enter="editEnd(todo.title, key)">
-
-                    <button class="delete_btn" @click="deleteTodo(todo.title, $event)">
+                    <button class="delete_btn" @click="deleteTodo(todo.title, $event)" v-show="edit != key">
                         <i class="material-icons">delete</i>
                     </button>
-                    <button v-if="!todo.done" class="done_btn" @click="doneTodo(todo.title)">
+                    <button v-if="!todo.done" class="done_btn" @click="doneTodo(todo.title)" v-show="edit != key">
                         <i class="material-icons">done</i>
                     </button>
-                    <button v-if="todo.done" class="undone_btn" @click="doneTodo(todo.title)">
+                    <button v-if="todo.done" class="undone_btn" @click="doneTodo(todo.title)" v-show="edit != key">
                         <i class="material-icons">cached</i>
                     </button>
                     <span v-if="todo.done">done</span>
+
+                    <p v-show="edit != key" @click="editBegin(key)">
+                        {{ todo.title }}
+                    </p>
+                    <p v-show="edit != key" @click="editBegin(key)" class="small">
+                        {{ todo.description }}
+                    </p>
+                    <input type="text" :key="key" v-show="edit == key" v-model="todos[key].title" @keyup.enter="editEnd(todo.title, key)">
+                    <textarea :key="key" v-show="edit == key" v-model="todos[key].description" @keyup.enter="editEnd(todo.title, key)"></textarea>
+                    <!-- <input type="text" :key="key" v-show="edit == key" v-model="todos[key].description" @keyup.enter="editEnd(todo.title, key)"> -->
                 </li>
             </div>
         </ul>
