@@ -162,11 +162,11 @@ body {
     background-color: #328275;
 }
 
-#app li p {
+#app li p.todo-title {
     cursor: pointer;
     margin-bottom: 11px;
 }
-#app li p.small {
+#app li p.todo-description {
     font-size: 14px !important;
 }
 

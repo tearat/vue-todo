@@ -54,10 +54,10 @@
                     </button>
                     <span v-if="todo.done">done</span>
 
-                    <p v-show="edit != key" @click="editBegin(key)">
+                    <p v-show="edit != key" @click="editBegin(key)" class="todo-title">
                         {{ todo.title }}
                     </p>
-                    <p v-show="edit != key" @click="editBegin(key)" class="small">
+                    <p v-show="edit != key" @click="editBegin(key)" class="todo-description">
                         {{ todo.description }}
                     </p>
                     <input type="text" :key="key" v-show="edit == key" v-model="todos[key].title" @keyup.enter="editEnd(todo.title, key)">
